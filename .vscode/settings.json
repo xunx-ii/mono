@@ -1,0 +1,72 @@
+{
+    "workbench.colorTheme": "Default Dark Modern",
+    "editor.tokenColorCustomizations": {
+        "textMateRules": [
+            {
+                "scope": [
+                    "entity.name.type",
+                ],
+                "settings": {
+                    "foreground": "#FFD700"
+                }
+            },
+            {
+                "scope": "entity.name.function.preprocessor",
+                "settings": {
+                    "foreground": "#BC63C5"
+                }
+            },
+            {
+                "scope": "entity.name.function",
+                "settings": {
+                    "foreground": "#FF8040"
+                }
+            },
+            {
+                "scope": [
+                    "variable.parameter",
+                    "variable.other.local",
+                    "variable.other.property",
+                    "variable.other.global",
+                    "variable.other.constant.cpp",
+                    "variable.other.readwrite.cpp"
+                ],
+                "settings": {
+                    "foreground": "#BDB76B"
+                }
+            },
+            {
+                "scope": [
+                    "variable.other.enummember",
+                ],
+                "settings": {
+                    "foreground": "#B9771E"
+                }
+            },
+            {
+                "scope": [
+                    "entity.name.namespace",
+                ],
+                "settings": {
+                    "foreground": "#B8D7A3"
+                }
+            },
+        ]
+    },
+    "clangd.arguments": [
+        "--clang-tidy",                 
+        "--all-scopes-completion",     
+        "--completion-style=detailed", 
+        "--pch-storage=memory",
+        "--j=32",                        
+        "--background-index"
+    ],
+    "clangd.path": "clangd-15",
+    "explorer.compactFolders": false,
+    "explorer.autoReveal": false,
+    "editor.semanticHighlighting.enabled": true,
+    "clangd.fallbackFlags": [
+        "-std=c++17",
+        "-I/root/Mono/build/vcpkg_installed/x64-linux/include",
+    ]
+}
