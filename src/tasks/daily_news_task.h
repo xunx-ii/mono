@@ -40,7 +40,7 @@ public:
 	}
 
 	virtual void run(std::string &response) override {
-		response = "[CQ:at,qq=all][CQ:image,file=https://api.03c3.cn/zb/,cache=0]";
+		response = "[CQ:image,file=https://api.03c3.cn/zb/,cache=0]";
 	}
 
 	virtual void tick(mn::time time) override {
@@ -49,7 +49,8 @@ public:
 				mn::meesage meesage;
 				std::string response;
 				run(response);
-				meesage.message = response;
+				// 订阅的消息
+				meesage.message = "[CQ:at,qq=all]" + response;
 
 				for (uint64_t id : setting.subscribed_groups) {
 					meesage.is_group_msg = true;

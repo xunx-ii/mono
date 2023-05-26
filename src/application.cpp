@@ -92,6 +92,16 @@ void application::run() {
 	// 使用中国的时区
 	int offset = 8 * 3600;
 
+	{
+		uint64_t now_time = get_local_time() + deviation_time;
+		time_t tt = static_cast<time_t>((now_time / 1000) + offset);
+		struct tm *time_info = gmtime(&tt);
+
+		char buffer[80];
+		std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", time_info);
+		spdlog::info("当前服务器时间 {}", buffer);
+	}
+
 	while (!should_exit_app) {
 
 		// 使用本地时区+网络时间校准偏移
@@ -174,8 +184,6 @@ uint64_t application::get_online_time() {
 		try {
 			nlohmann::json root = nlohmann::json::parse(response);
 			time_now = std::stoull(root["data"]["t"].get<std::string>());
-			spdlog::info("get_online_time {}:", time_now);
-
 		} catch (nlohmann::json::parse_error &e) {
 			spdlog::error("failed to parse message: {}", e.what());
 		}
