@@ -7,10 +7,7 @@
 
 class daily_tasks : public task_base {
 public:
-	daily_tasks() {
-		task_name = "daily_tasks";
-		request.cmd = u8"日常";
-	}
+	daily_tasks() { task_name = "daily_tasks"; }
 
 	virtual void begin() override {}
 

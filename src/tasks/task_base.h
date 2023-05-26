@@ -5,17 +5,12 @@
 #include <filesystem>
 #include <string>
 
-struct user_request {
-	std::string cmd;
-	std::string body;
-};
-
 class task_base {
 public:
 	task_base() {}
 
 	// 返回true时 将发送run的response给消息发送者。
-	virtual bool shoule_call(mn::meesage whose) { return handle_message(whose.message); }
+	virtual bool shoule_call(mn::meesage whose) { return false; }
 
 	virtual void run(std::string &response) {}
 
@@ -35,15 +30,15 @@ public:
 		return (base_task_config_path / (task_name + ".json")).string();
 	}
 
-	virtual bool handle_message(const std::string &cmd) {
-		if (cmd == request.cmd) {
+	virtual bool handle_message(const std::string &cmd, const std::string &call_cmd) {
+		if (cmd == call_cmd) {
 			return true;
 		}
 
 		int pos = cmd.find_first_of(" ");
 
-		if (cmd.substr(0, pos) == request.cmd) {
-			request.body = cmd.substr(pos + 1, cmd.size());
+		if (cmd.substr(0, pos) == call_cmd) {
+			request_body = cmd.substr(pos + 1, cmd.size());
 			return true;
 		}
 
@@ -87,6 +82,6 @@ public:
 	bool enable;
 	bool has_config;
 	std::string task_name;
-	user_request request;
+	std::string request_body;
 	std::function<void(mn::meesage message)> send_message_deg;
 };

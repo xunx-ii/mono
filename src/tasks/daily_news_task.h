@@ -3,6 +3,7 @@
 #include "task_base.h"
 #include <spdlog/spdlog.h>
 #include <string>
+#include <vector>
 
 struct daily_news_task_setting {
 	daily_news_task_setting() = default;
@@ -11,18 +12,25 @@ struct daily_news_task_setting {
 	mn::time time = {0, 0, 9};
 	std::vector<uint64_t> subscribed_groups;
 	std::vector<uint64_t> subscribed_users;
+	std::vector<std::string> call_cmds = {u8"日报", u8"news", u8"News"};
 };
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(daily_news_task_setting, enable, time, subscribed_groups,
-                                                subscribed_users)
+                                                subscribed_users, call_cmds)
 
 class daily_news_task : public task_base {
 private:
 	daily_news_task_setting setting;
 
 public:
-	daily_news_task() {
-		task_name = "daily_news_task";
-		request.cmd = u8"日报";
+	daily_news_task() { task_name = "daily_news_task"; }
+
+	virtual bool shoule_call(mn::meesage whose) override {
+		for (const std::string &cmd : setting.call_cmds) {
+			if (handle_message(whose.message, cmd)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	virtual void begin() override {
@@ -32,7 +40,7 @@ public:
 	}
 
 	virtual void run(std::string &response) override {
-		response = "[CQ:image,file=https://api.03c3.cn/zb/,cache=0]";
+		response = "[CQ:at,qq=all][CQ:image,file=https://api.03c3.cn/zb/,cache=0]";
 	}
 
 	virtual void tick(mn::time time) override {
