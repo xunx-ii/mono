@@ -22,15 +22,14 @@ void processes::send(mn::time time) {
 
 void processes::tick(mn::time time, float delta_time) {
 	static uint8_t sec = 0;
-
 	// 间隔是每秒一次
 	if (time.sec != sec) {
+		send(time);
 		for (task_base *task : tasks) {
 			if (task->enable) {
 				task->tick(time);
 			}
 		}
-		send(time);
 		sec = time.sec;
 	}
 }
@@ -59,13 +58,11 @@ void processes::processing(recv_message_type type, std::string message) {
 							if (tasker->shoule_call({is_group_msg, to, cmd})) {
 								std::string response;
 								tasker->run(response);
-
-								mn::meesage info;
-								info.to = to;
-								info.is_group_msg = is_group_msg;
-								info.message = response;
-
-								processed_messages.push(info);
+								mn::meesage meesage;
+								meesage.to = to;
+								meesage.is_group_msg = is_group_msg;
+								meesage.message = response;
+								processed_messages.push(meesage);
 							}
 						});
 					}
