@@ -5,6 +5,7 @@
     "nlohmann-json",
     "spdlog",
     "websocketpp",
-    "curl"
+    "curl",
+    "utfcpp"
   ]
 }

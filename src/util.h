@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-size_t req_reply(void *ptr, size_t size, size_t nmemb, void *stream) {
+inline size_t req_reply(void *ptr, size_t size, size_t nmemb, void *stream) {
 	if (stream == NULL || ptr == NULL || size == 0)
 		return 0;
 

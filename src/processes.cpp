@@ -1,12 +1,14 @@
 #include "processes.h"
 #include "application.h"
 #include "tasks/daily_news_task.h"
+#include "tasks/daily_stock_task.h"
 #include <cstdint>
 #include <spdlog/spdlog.h>
 
 processes::processes() {
 	tasker_mgr.start();
 	tasks.push_back(new daily_news_task());
+	tasks.push_back(new daily_stock_task());
 }
 
 processes::~processes() {}

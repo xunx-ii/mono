@@ -12,6 +12,7 @@ find_package(CURL CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(websocketpp CONFIG REQUIRED)
+find_package(utf8cpp CONFIG REQUIRED)
 
 add_executable (mono 
     "src/mono.cpp" 
@@ -26,3 +27,4 @@ target_link_libraries(mono PRIVATE nlohmann_json::nlohmann_json)
 target_link_libraries(mono PRIVATE spdlog::spdlog spdlog::spdlog_header_only)
 target_link_libraries(mono PRIVATE websocketpp::websocketpp)
 target_link_libraries(mono PRIVATE CURL::libcurl)
+target_link_libraries(mono PRIVATE utf8::cpp)

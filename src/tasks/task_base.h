@@ -32,6 +32,7 @@ public:
 
 	virtual bool handle_message(const std::string &cmd, const std::string &call_cmd) {
 		if (cmd == call_cmd) {
+			request_cmd = call_cmd;
 			return true;
 		}
 
@@ -39,6 +40,7 @@ public:
 
 		if (cmd.substr(0, pos) == call_cmd) {
 			request_body = cmd.substr(pos + 1, cmd.size());
+			request_cmd = call_cmd;
 			return true;
 		}
 
@@ -83,5 +85,6 @@ public:
 	bool has_config;
 	std::string task_name;
 	std::string request_body;
+	std::string request_cmd;
 	std::function<void(mn::meesage message)> send_message_deg;
 };

@@ -10,11 +10,12 @@ struct daily_news_task_setting {
 
 	bool enable = true;
 	mn::time time = {0, 0, 9};
+	std::string url = u8"https://api.qqsuu.cn/api/dm-60s?type=图片";
 	std::vector<uint64_t> subscribed_groups;
 	std::vector<uint64_t> subscribed_users;
 	std::vector<std::string> call_cmds = {u8"日报", u8"news", u8"News"};
 };
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(daily_news_task_setting, enable, time, subscribed_groups,
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(daily_news_task_setting, enable, time, url, subscribed_groups,
                                                 subscribed_users, call_cmds)
 
 class daily_news_task : public task_base {
@@ -34,13 +35,14 @@ public:
 	}
 
 	virtual void begin() override {
-		task_base::begin();
 		load_config<daily_news_task_setting>(setting);
 		enable = setting.enable;
 	}
 
 	virtual void run(std::string &response) override {
-		response = u8"[CQ:image,file=https://api.qqsuu.cn/api/dm-60s?type=图片,cache=0]";
+		std::string url = setting.url;
+		url.erase(std::remove_if(url.begin(), url.end(), ::isspace), url.end());
+		response = u8"[CQ:image,file=" + url + ",cache=0]";
 	}
 
 	virtual void tick(mn::time time) override {
