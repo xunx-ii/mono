@@ -40,7 +40,7 @@ public:
 	}
 
 	virtual void run(std::string &response) override {
-		response = "[CQ:image,file=https://api.03c3.cn/zb/,cache=0]";
+		response = u8"[CQ:image,file=https://api.qqsuu.cn/api/dm-60s?type=图片,cache=0]";
 	}
 
 	virtual void tick(mn::time time) override {
