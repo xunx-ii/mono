@@ -1,6 +1,7 @@
 #pragma once
 
 #include "task_base.h"
+#include <atomic>
 #include <spdlog/spdlog.h>
 #include <string>
 #include <vector>
@@ -21,7 +22,7 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(daily_news_task_setting, enable,
 class daily_news_task : public task_base {
 private:
 	daily_news_task_setting setting;
-	std::string setting_url;
+	std::atomic<std::string *> url;
 
 public:
 	daily_news_task() { task_name = "daily_news_task"; }
@@ -38,20 +39,26 @@ public:
 	virtual void begin() override {
 		load_config<daily_news_task_setting>(setting);
 		enable = setting.enable;
-		setting_url = setting.url;
-		setting_url.erase(std::remove_if(setting_url.begin(), setting_url.end(), ::isspace), setting_url.end());
+		std::string temp_url = setting.url;
+		temp_url.erase(std::remove_if(temp_url.begin(), temp_url.end(), ::isspace), temp_url.end());
+		std::string *old_str = url.exchange(&temp_url);
+		delete old_str;
 	}
 
 	virtual void run(std::string &response) override {
 		if (request_body.empty()) {
-			response = u8"[CQ:image,file=" + setting_url + ",cache=0]";
+			response = u8"[CQ:image,file=" + *url + ",cache=0]";
 		} else if (request_body == u8"reset") {
-			setting_url = setting.url;
-			setting_url.erase(std::remove_if(setting_url.begin(), setting_url.end(), ::isspace),
-			                  setting_url.end());
+			std::string temp_url = setting.url;
+			temp_url.erase(std::remove_if(temp_url.begin(), temp_url.end(), ::isspace), temp_url.end());
+			std::string *old_str = url.exchange(&temp_url);
+			delete old_str;
 			response = u8"API获取接口已恢复默认配置";
 		} else {
-			setting_url = request_body;
+			std::string temp_url = request_body;
+			temp_url.erase(std::remove_if(temp_url.begin(), temp_url.end(), ::isspace), temp_url.end());
+			std::string *old_str = url.exchange(&temp_url);
+			delete old_str;
 			response = u8"API获取接口已切换";
 		}
 	}
