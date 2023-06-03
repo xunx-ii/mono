@@ -31,6 +31,7 @@ public:
 	}
 
 	virtual bool handle_message(const std::string &cmd, const std::string &call_cmd) {
+		request_body = "";
 		if (cmd == call_cmd) {
 			return true;
 		}
