@@ -10,7 +10,7 @@ struct daily_news_task_setting {
 
 	bool enable = true;
 	mn::time time = {0, 0, 9};
-	std::string url = u8"https://api.qqsuu.cn/api/dm-60s?type=图片";
+	std::string url = u8"https://api.vvhan.com/api/60s";
 	std::vector<uint64_t> subscribed_groups;
 	std::vector<uint64_t> subscribed_users;
 	std::vector<std::string> call_cmds = {u8"日报", u8"news", u8"News"};
@@ -21,6 +21,7 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(daily_news_task_setting, enable,
 class daily_news_task : public task_base {
 private:
 	daily_news_task_setting setting;
+	std::string setting_url;
 
 public:
 	daily_news_task() { task_name = "daily_news_task"; }
@@ -37,12 +38,22 @@ public:
 	virtual void begin() override {
 		load_config<daily_news_task_setting>(setting);
 		enable = setting.enable;
+		setting_url = setting.url;
+		setting_url.erase(std::remove_if(setting_url.begin(), setting_url.end(), ::isspace), setting_url.end());
 	}
 
 	virtual void run(std::string &response) override {
-		std::string url = setting.url;
-		url.erase(std::remove_if(url.begin(), url.end(), ::isspace), url.end());
-		response = u8"[CQ:image,file=" + url + ",cache=0]";
+		if (request_body.empty()) {
+			response = u8"[CQ:image,file=" + setting_url + ",cache=0]";
+		} else if (request_body == u8"reset") {
+			setting_url = setting.url;
+			setting_url.erase(std::remove_if(setting_url.begin(), setting_url.end(), ::isspace),
+			                  setting_url.end());
+			response = u8"API获取接口已恢复默认配置";
+		} else {
+			setting_url = request_body;
+			response = u8"API获取接口已切换";
+		}
 	}
 
 	virtual void tick(mn::time time) override {
