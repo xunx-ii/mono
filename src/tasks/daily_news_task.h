@@ -22,7 +22,8 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(daily_news_task_setting, enable,
 class daily_news_task : public task_base {
 private:
 	daily_news_task_setting setting;
-	std::atomic<std::string *> url;
+	mutable std::mutex mtx;
+	std::string url;
 
 public:
 	daily_news_task() { task_name = "daily_news_task"; }
@@ -41,24 +42,23 @@ public:
 		enable = setting.enable;
 		std::string temp_url = setting.url;
 		temp_url.erase(std::remove_if(temp_url.begin(), temp_url.end(), ::isspace), temp_url.end());
-		std::string *old_str = url.exchange(&temp_url);
-		delete old_str;
+		url = temp_url;
 	}
 
 	virtual void run(std::string &response) override {
 		if (request_body.empty()) {
-			response = u8"[CQ:image,file=" + *url + ",cache=0]";
+			response = u8"[CQ:image,file=" + url + ",cache=0]";
 		} else if (request_body == u8"reset") {
+			std::unique_lock<std::mutex> locker(mtx);
 			std::string temp_url = setting.url;
 			temp_url.erase(std::remove_if(temp_url.begin(), temp_url.end(), ::isspace), temp_url.end());
-			std::string *old_str = url.exchange(&temp_url);
-			delete old_str;
+			url = temp_url;
 			response = u8"API获取接口已恢复默认配置";
 		} else {
+			std::unique_lock<std::mutex> locker(mtx);
 			std::string temp_url = request_body;
 			temp_url.erase(std::remove_if(temp_url.begin(), temp_url.end(), ::isspace), temp_url.end());
-			std::string *old_str = url.exchange(&temp_url);
-			delete old_str;
+			url = temp_url;
 			response = u8"API获取接口已切换";
 		}
 	}
