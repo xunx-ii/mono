@@ -61,6 +61,7 @@ public:
 			url = temp_url;
 			response = u8"API获取接口已切换";
 		}
+		request_body = "";
 	}
 
 	virtual void tick(mn::time time) override {
